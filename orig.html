@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bonk-A-Red-Flag</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Varela+Round&display=swap" rel="stylesheet">
+
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+        }
+        html, body{
+            height: 100%;
+        }
+        body{
+            font-family: "Varela Round", sans-serif;
+            background-image: url("https://i.pinimg.com/originals/12/cf/dc/12cfdcbb2320824919f1f1b119591d39.jpg");
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+        .button {
+            color: rgba(0, 0, 0, .884);
+            background-color: white;
+            font-size: 20pt;
+            font-family: "Varela Round", sans-serif;
+            border-radius: 15%;
+            padding: 20px;
+        }
+        .score{
+            margin-top: 4%;
+            font-size: 45pt;
+            margin-bottom: 4%;
+        }
+        .board{
+            height: 600px;
+            width: 600px;
+            background-image: url("https://i.pinimg.com/originals/fc/f6/1c/fcf61c590a3c80cd3bd07fef9b5ba2a1.jpg");
+            display: grid;
+            border-radius: 2%;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            gap: 80px;
+            padding-top: 50px;
+            padding-left: 50px;
+            padding-right: 50px;
+        }
+        .hole{
+            background-color: rgb(106, 157, 204);
+            border-radius: 5%;
+            box-shadow: inset 0 10px 0 7px rgb(59, 82, 100),
+                        inset 0 20px 20px 15px rgba(255, 233, 233, 0.3),
+                        0 0 5px rgba(0, 0, 0, .5);
+            position: relative;
+            overflow: hidden;
+        }
+         .mole{
+            width: 50%;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: 0;
+            animation: rise .3s ease-out;
+        }
+        @keyframes rise {
+            0%{
+                transform: translateX(-50%) translateY(100%);
+            }
+            100%{
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+
+        .cursor{
+            height: 150px;
+            width: 135px;
+            position: absolute;
+            background-image: url('baseball_bat.png');
+            background-size: 100% 100%;
+            transform: translate(-80%, -30%);
+            transition: transform .1s;
+            pointer-events: none;
+        }
+        .cursor.active{
+            transform: translate(-20%, -20%) rotate(15deg);
+        }
+    </style>
+</head>
+<body>
+    <form>
+        <button class="button" formaction="index.html">Menu</button>
+    </form>
+    <h1 class="score">SCORE: <span>0</span></h1>
+    <div>You have <span id="timer"></span> seconds!</div>
+    <div class="board">
+        <div class="hole"></div>
+        <div class="hole"></div>
+        <div class="hole"></div>
+        <div class="hole"></div>
+        <div class="hole"></div>
+        <div class="hole"></div>
+        <div class="hole"></div>
+        <div class="hole"></div>
+        <div class="hole"></div>
+    </div>
+    <div class="cursor"></div>
+<script>
+        const cursor = document.querySelector('.cursor')
+        const holes = [...document.querySelectorAll('.hole')]
+        const scoreEl = document.querySelector('.score span')
+        let score = 0
+        
+        const sound = new Audio("assets/smash.mp3")
+        
+        function run(){
+            const i = Math.floor(Math.random() * holes.length)
+            const hole = holes[i]
+            let timer = null
+        
+            const img = document.createElement('img')
+            img.classList.add('mole')
+            img.src = 'red-flag.png'
+        
+            img.addEventListener('click', () => {
+                score += 10
+                sound.play()
+                scoreEl.textContent = score
+                img.src = 'red-flag-bonked.png'
+                clearTimeout(timer)
+                setTimeout(() => {
+                    hole.removeChild(img)
+                    run()
+                }, 500)
+            })
+        
+            hole.appendChild(img)
+        
+            timer = setTimeout(() => {
+                hole.removeChild(img)
+                run()
+            }, 1500)
+        }
+        run()
+        
+        window.addEventListener('mousemove', e => {
+            cursor.style.top = e.pageY + 'px'
+            cursor.style.left = e.pageX + 'px'
+        })
+        window.addEventListener('mousedown', () => {
+            cursor.classList.add('active')
+        })
+        window.addEventListener('mouseup', () => {
+            cursor.classList.remove('active')
+        })
+
+let time = 60;
+
+    var startTimer = function(){
+  document.getElementById("timer").innerHTML = time;
+  if(time==0){
+    alert("You Scored "+score+" Points!");
+    location.href = "index.html";
+  } 
+  
+  else{
+    time -= 1;
+    setTimeout(startTimer, 1000);
+  }
+}
+startTimer();
+</script>
+</body>
+</html>
